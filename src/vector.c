@@ -16,9 +16,15 @@ vector_t vector_make(const size_t item_size) {
     vector_t vec;
 
     vec.item_size = item_size;
-    vec.heap_ptr = malloc(vec.item_size * VECTOR_INIT_CAPACITY);
     vec.capacity = VECTOR_INIT_CAPACITY;
     vec.len = 0;
+
+    vec.heap_ptr = malloc(vec.item_size * VECTOR_INIT_CAPACITY);
+
+    if (vec.heap_ptr == nullptr) {
+        fprintf(stderr, "Fatal Error: Out of memory at vector_make during malloc");
+        exit(EXIT_FAILURE);
+    }
 
     return vec;
 }
@@ -27,9 +33,15 @@ vector_t vector_make_with_capacity(const size_t item_size, const size_t capacity
     vector_t vec;
 
     vec.item_size = item_size;
-    vec.heap_ptr = malloc(vec.item_size * capacity);
     vec.capacity = capacity;
     vec.len = 0;
+
+    vec.heap_ptr = malloc(vec.item_size * vec.capacity);
+
+    if (vec.heap_ptr == nullptr) {
+        fprintf(stderr, "Fatal Error: Out of memory at vector_make_with_capacity during malloc");
+        exit(EXIT_FAILURE);
+    }
 
     return vec;
 }
@@ -63,8 +75,12 @@ void vector_push_back(vector_t *v, const void* item) {
     v->len++;
 }
 
+void* vector_at(vector_t *v, size_t idx) {
+    return (char*)v->heap_ptr + idx * v->item_size;
+}
+
 void vector_free(vector_t *v) {
-    if (v != nullptr) return;
+    if (v == nullptr) return;
 
     if (v->heap_ptr != nullptr) {
         free(v->heap_ptr);

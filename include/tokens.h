@@ -18,15 +18,14 @@ typedef enum {
 
 typedef struct {
     const char *text;
-    token_tag_t tag;
     size_t len;
+    token_tag_t tag;
 } token_t;
 
 typedef struct {
     const char *name;
-    token_tag_t type;
-} token_string_t;
+    token_tag_t token;
+} token_match_t;
 
-const token_string_t keywords[];
-
-const token_string_t symbols[];
+extern token_match_t string_matches[];
+extern size_t num_string_matches;

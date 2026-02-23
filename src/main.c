@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "lexer.h"
+#include "tokens.h"
 
 char* open_null_terminated_file(const char *path);
 
@@ -11,10 +13,18 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    char *file_text = open_null_terminated_file(argv[1]);
+    char *file_text = open_null_terminated_file("../examples/main.k");
+    const size_t file_text_len = strlen(file_text);
 
+    vector_t lexer_data = make_lexer_data(file_text, file_text_len);
 
+    for (size_t i = 0; i < lexer_data.len; i++) {
+        const token_t *token = vector_at(&lexer_data, i);
 
+        printf("%.*s\n", (int)token->len, token->text);
+    }
+
+    vector_free(&lexer_data);
     return 0;
 }
 

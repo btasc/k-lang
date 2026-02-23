@@ -13,6 +13,4 @@ vector_t vector_make_with_capacity(size_t item_size, size_t capacity);
 
 void vector_push_back(vector_t *v, const void* item);
 void vector_free(vector_t *v);
-
-void vector_push_back(vector_t *v, const void* item);
-void vector_free(vector_t *v);
+void* vector_at(vector_t *v, size_t idx);

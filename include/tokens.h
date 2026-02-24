@@ -2,17 +2,26 @@
 #include <stddef.h>
 
 typedef enum {
-    // Symbols, T_S for token symbol
-    T_S_LPAREN, T_S_RPAREN, T_S_SEMICOLON, T_S_EOF, T_S_COMMENT,
+    // Symbols, T for token symbol
+    T_LPAREN, T_RPAREN, T_SEMICOLON, T_COMMENT, T_ASSIGNMENT, T_EXPRESSION_START,
 
-    // Keywords, T_K for token keyword
-    T_K_FOR, T_K_WHILE, T_K_IF,
+    // T_LCBRACE = left curly brace {, T_LBRACKET = left bracket [
+    T_LCBRACE, T_RCBRACE, T_LBRACKET, T_RBRACKET,
 
-    // Literals, T_L for token literal
-    T_L_INT, T_L_FLOAT, T_R_BOOL, T_R_FLOAT,
+    // Keywords
+    T_FOR, T_WHILE, T_IF, T_VAR,
+
+    // Literals
+    T_INT, T_STRING, T_BOOL, T_FLOAT,
 
     // Identifier (variables or function names)
     T_IDENTIFIER,
+
+    // End of file
+    T_EOF,
+
+    // Used in the tree.c to show that an expression statement goes here
+    T_EXPRESSION,
 
 } token_tag_t;
 

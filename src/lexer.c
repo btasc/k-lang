@@ -37,53 +37,60 @@ vector_t make_lexer_data(const char *file_text, size_t file_text_len) {
 
         // Now go through and check symbols
         bool is_keyword = false;
-        size_t n = 0;
+        size_t largest_n = 0;
         size_t keyword_idx = 0;
 
         for (size_t i = 0; i < num_string_matches; i++) {
-            n = strlen(string_matches[i].name);
+            const size_t n = strlen(string_matches[i].name);
 
             if (strncmp(string_matches[i].name, file_text, n) == 0) {
-                keyword_idx = i;
+
+                if (n > largest_n) {
+                    largest_n = n;
+                    keyword_idx = i;
+                }
+
                 is_keyword = true;
-                break;
             }
         }
 
+        if (!is_identifier && !is_keyword) {
+            file_text += 1;
+
+            continue;
+        }
+        
+        token_t token;
 
         if (is_identifier && is_keyword) {
             // If the identifier is the same len as the keyword, we use the keyword
-            if (file_text + n >= move_ptr) {
-                token_t token = {file_text, n, string_matches[keyword_idx].token};
-                vector_push_back(&result, &token);
+            if (file_text + largest_n >= move_ptr) {
+                token = (token_t){file_text, largest_n, string_matches[keyword_idx].token};
 
-                file_text += n;
+                file_text += largest_n;
             } else {
                 // If it's longer than the keyword, we use the identifier
-                token_t token = {file_text, (size_t)move_ptr - (size_t)file_text, T_IDENTIFIER};
-                vector_push_back(&result, &token);
+                token = (token_t){file_text, move_ptr - file_text, T_IDENTIFIER};
 
                 file_text = move_ptr;
             }
 
-        } else if (is_identifier && !is_keyword) {
+        } else if (is_identifier) {
 
-            token_t token = {file_text, move_ptr - file_text, T_IDENTIFIER};
-            vector_push_back(&result, &token);
+            token = (token_t){file_text, move_ptr - file_text, T_IDENTIFIER};
 
             file_text = move_ptr;
 
-        } else if (!is_identifier && is_keyword) {
+        } else {
 
-            token_t token = {file_text, n, string_matches[keyword_idx].token};
-            vector_push_back(&result, &token);
+            token = (token_t){file_text, largest_n, string_matches[keyword_idx].token};
+            file_text += largest_n;
+        } 
 
-            file_text += n;
-
-        } else if (!is_identifier && !is_keyword) {
-            file_text += 1;
-        }
+        vector_push_back(&result, &token);
     }
+
+    vector_push_back(&result, &(token_tag_t){T_EOF});
 
     return result;
 }

@@ -4,6 +4,8 @@
 
 #include "lexer.h"
 #include "tokens.h"
+#include "tree.h"
+#include "interpreter.h"
 
 char* open_null_terminated_file(const char *path);
 
@@ -14,7 +16,10 @@ int main(int argc, char *argv[]) {
     }
 
     char *file_text = open_null_terminated_file("../examples/main.k");
+    const char* file_text_start = file_text;
+
     const size_t file_text_len = strlen(file_text);
+    const char* file_text_end = file_text_start + file_text_len;
 
     vector_t lexer_data = make_lexer_data(file_text, file_text_len);
 
@@ -24,7 +29,12 @@ int main(int argc, char *argv[]) {
         printf("%.*s\n", (int)token->len, token->text);
     }
 
+    vector_t tree_data = tree_parse_tokens(&lexer_data, file_text_start, file_text_end);
+
+    vector_free(&tree_data);
     vector_free(&lexer_data);
+
+    free(file_text);
     return 0;
 }
 
